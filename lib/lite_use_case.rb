@@ -15,17 +15,21 @@ module LiteUseCase
   end
 
   def validate
+    true
   end
 
-  def call
+  def _call
+    call if valid?
+  end
+
+  def valid?
+    validate
   end
 
   module ClassMethods
-
     def expose(variables)
       @variables << variables
       @variables.flatten
-      nil
     end
 
     def exposed
@@ -33,14 +37,13 @@ module LiteUseCase
     end
 
     def call(params={})
-      new(params).call
+      new(params)._call
     end
-
   end
 
   class Result
 
-    attr_reader :params, :success
+    attr_accessor :params, :success
 
     def initialize(params={})
       @params = params
@@ -57,7 +60,7 @@ module LiteUseCase
     end
 
     def fail!
-      success = false
+      self.success = false
     end
 
     def add_error(error)
